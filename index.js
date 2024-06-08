@@ -1,6 +1,9 @@
 const fs = require('fs');
 
 function sanitizeInput(input) {
+  if (input === undefined) {
+    throw new Error('Input is undefined');
+  }
   return input.replace(/[^\w\s\.\-]/gi, ''); // Simple sanitization example
 }
 
