@@ -109,10 +109,12 @@ And the verdict is: after some heavy lifting..
 
 function generateReport(jobType) {
   let reportContent;
-  if (jobType === 'environment_setup' || jobType === 'build_prepare') {
+  if (jobType === 'environment_setup') {
+    reportContent = writeEnvironmentReport();
+  } else if (jobType === 'setup') {
     reportContent = writeSetupReport();
   } else if (jobType === 'builder') {
-    reportContent = writeBuilderReport();
+      reportContent = writeBuilderReport();
   } else if (jobType === 'devel') {
     reportContent = writeDevelReport();
   } else if (jobType === 'test') {
