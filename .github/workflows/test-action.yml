@@ -1,0 +1,40 @@
+name: Test Write Job Report Action
+
+on: [push, pull_request]
+
+jobs:
+  test-write-job-report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run Write Job Report Action
+        id: write_job_report
+        uses: ./
+        with:
+          report-dir: '.'
+          report-file: 'job_report.md'
+          job-type: 'environment'
+        env:
+          INPUT_REPORT_DIR: '.'
+          INPUT_REPORT_FILE: 'job_report.md'
+          INPUT_JOB_TYPE: 'environment'
+
+      - name: Display the generated report
+        run: cat job_report.md
+
+      - name: Upload generated report as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: job-report
+          path: job_report.md
