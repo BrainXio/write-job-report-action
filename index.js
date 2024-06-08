@@ -1,10 +1,11 @@
 const fs = require('fs');
+const path = require('path');
 
-function sanitizeInput(input) {
+function sanitizeInput(input, variableName) {
   if (input === undefined) {
-    throw new Error('Input is undefined');
+    throw new Error(`Input is undefined for variable: ${variableName}`);
   }
-  return input.replace(/[^\w\s\.\-]/gi, ''); // Simple sanitization example
+  return input.replace(/[^a-zA-Z0-9_\-\/\.]/g, ''); // Allow slashes, alphanumerics, underscore, hyphen, and period
 }
 
 function writeEnvironmentReport() {
@@ -133,8 +134,18 @@ function saveReport(reportPath, reportContent) {
 }
 
 try {
-  const reportPath = sanitizeInput(process.env.INPUT_REPORT_PATH);
-  const jobType = sanitizeInput(process.env.INPUT_JOB_TYPE);
+  if (!process.env.INPUT_REPORT_PATH) {
+    throw new Error('INPUT_REPORT_PATH is not defined');
+  }
+  if (!process.env.INPUT_JOB_TYPE) {
+    throw new Error('INPUT_JOB_TYPE is not defined');
+  }
+
+  console.log('INPUT_REPORT_PATH:', process.env.INPUT_REPORT_PATH);
+  console.log('INPUT_JOB_TYPE:', process.env.INPUT_JOB_TYPE);
+
+  const reportPath = sanitizeInput(process.env.INPUT_REPORT_PATH, 'INPUT_REPORT_PATH');
+  const jobType = sanitizeInput(process.env.INPUT_JOB_TYPE, 'INPUT_JOB_TYPE');
   const reportContent = generateReport(jobType);
   console.log('Writing report to:', reportPath);
   saveReport(reportPath, reportContent);
@@ -144,6 +155,6 @@ try {
   const envOutputPath = process.env.GITHUB_OUTPUT;
   fs.appendFileSync(envOutputPath, `report-content=${reportContent.replace(/\n/g, '%0A')}\n`);
 } catch (error) {
-  console.error('Error writing report:', error);
+  console.error('Error writing report:', error.message);
   process.exit(1);
 }
