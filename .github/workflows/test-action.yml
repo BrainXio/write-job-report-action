@@ -22,15 +22,19 @@ jobs:
         id: write_job_report
         uses: ./
         with:
-          report-dir: 'test-reports'
+          report-dir: '.'
           report-file: 'job_report.md'
           job-type: 'environment'
-          
+        env:
+          INPUT_REPORT_DIR: '.'
+          INPUT_REPORT_FILE: 'job_report.md'
+          INPUT_JOB_TYPE: 'environment'
+
       - name: Display the generated report
-        run: cat test-reports/job_report.md
+        run: cat job_report.md
 
       - name: Upload generated report as artifact
         uses: actions/upload-artifact@v2
         with:
           name: job-report
-          path: test-reports/job_report.md
+          path: job_report.md
