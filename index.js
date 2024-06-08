@@ -129,27 +129,36 @@ function generateReport(jobType) {
   return reportContent;
 }
 
-function saveReport(reportPath, reportContent) {
+function saveReport(reportDir, reportFile, reportContent) {
+  if (!fs.existsSync(reportDir)) {
+    fs.mkdirSync(reportDir, { recursive: true });
+  }
+  const reportPath = path.join(reportDir, reportFile);
   fs.writeFileSync(reportPath, reportContent);
 }
 
 try {
-  if (!process.env.INPUT_REPORT_PATH) {
-    throw new Error('INPUT_REPORT_PATH is not defined');
+  if (!process.env.INPUT_REPORT_DIR) {
+    throw new Error('INPUT_REPORT_DIR is not defined');
+  }
+  if (!process.env.INPUT_REPORT_FILE) {
+    throw new Error('INPUT_REPORT_FILE is not defined');
   }
   if (!process.env.INPUT_JOB_TYPE) {
     throw new Error('INPUT_JOB_TYPE is not defined');
   }
 
-  console.log('INPUT_REPORT_PATH:', process.env.INPUT_REPORT_PATH);
+  console.log('INPUT_REPORT_DIR:', process.env.INPUT_REPORT_DIR);
+  console.log('INPUT_REPORT_FILE:', process.env.INPUT_REPORT_FILE);
   console.log('INPUT_JOB_TYPE:', process.env.INPUT_JOB_TYPE);
 
-  const reportPath = sanitizeInput(process.env.INPUT_REPORT_PATH, 'INPUT_REPORT_PATH');
+  const reportDir = sanitizeInput(process.env.INPUT_REPORT_DIR, 'INPUT_REPORT_DIR');
+  const reportFile = sanitizeInput(process.env.INPUT_REPORT_FILE, 'INPUT_REPORT_FILE');
   const jobType = sanitizeInput(process.env.INPUT_JOB_TYPE, 'INPUT_JOB_TYPE');
   const reportContent = generateReport(jobType);
-  console.log('Writing report to:', reportPath);
-  saveReport(reportPath, reportContent);
-  console.log(`Report successfully written to ${reportPath}`);
+  console.log('Writing report to:', path.join(reportDir, reportFile));
+  saveReport(reportDir, reportFile, reportContent);
+  console.log(`Report successfully written to ${path.join(reportDir, reportFile)}`);
 
   // Use environment file to set the output variable
   const envOutputPath = process.env.GITHUB_OUTPUT;
