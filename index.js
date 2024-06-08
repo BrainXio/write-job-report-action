@@ -1,5 +1,4 @@
 const fs = require('fs');
-const path = require('path');
 
 function sanitizeInput(input) {
   return input.replace(/[^\w\s\.\-]/gi, ''); // Simple sanitization example
@@ -104,21 +103,19 @@ And the verdict is: after some heavy lifting..
 `;
 }
 
-function generateReport() {
-  const part = sanitizeInput(process.env.JOB_TYPE);
-
+function generateReport(jobType) {
   let reportContent;
-  if (part === 'environment_setup' || part === 'build_prepare') {
+  if (jobType === 'environment_setup' || jobType === 'build_prepare') {
     reportContent = writeSetupReport();
-  } else if (part === 'builder') {
+  } else if (jobType === 'builder') {
     reportContent = writeBuilderReport();
-  } else if (part === 'devel') {
+  } else if (jobType === 'devel') {
     reportContent = writeDevelReport();
-  } else if (part === 'test') {
+  } else if (jobType === 'test') {
     reportContent = writeTestReport();
-  } else if (part === 'prod') {
+  } else if (jobType === 'prod') {
     reportContent = writeProdReport();
-  } else if (part === 'release') {
+  } else if (jobType === 'release') {
     reportContent = writeReleaseReport();
   } else {
     reportContent = writeFinalReport();
@@ -134,7 +131,8 @@ function saveReport(reportPath, reportContent) {
 
 try {
   const reportPath = sanitizeInput(process.env.INPUT_REPORT_PATH);
-  const reportContent = generateReport();
+  const jobType = sanitizeInput(process.env.INPUT_JOB_TYPE);
+  const reportContent = generateReport(jobType);
   console.log('Writing report to:', reportPath);
   saveReport(reportPath, reportContent);
   console.log(`Report successfully written to ${reportPath}`);
