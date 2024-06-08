@@ -32,18 +32,18 @@ Now, sit back, relax, and let me walk you through some intriguing insights and u
 
 function writeSetupReport() {
   return `
-## ${process.env.GITHUB_REF_NAME} Setup Report
-
-🐳 Devel: \`docker pull ${process.env.GITHUB_REPOSITORY_OWNER}/${process.env.APP_NAME}:${process.env.IMAGE_TAG}\`
-
-> Add a sploosh of ❤️, enrich it with a drop of 🧪, and its going to be amazing! Stay tuned for more updates and keep being awesome!
-
-`;
+  ## ${process.env.GITHUB_REF_NAME} Setup Report
+  
+  🔜 Next Version: \`${process.env.NEXT_VERSION}\`
+  
+  > Add a sploosh of ❤️, enrich it with a drop of 🧪, and its going to be amazing! Stay tuned for more updates and keep being awesome!
+  
+  `;
 }
 
 function writeBuilderReport() {
   return `
-## ${process.env.GITHUB_REF_NAME} Builder Report
+  ## ${process.env.GITHUB_REF_NAME} Builder Report
 
 🐳 Builder: \`docker pull ${process.env.GITHUB_REPOSITORY_OWNER}/${process.env.APP_NAME}:${process.env.IMAGE_TAG}\`
 
