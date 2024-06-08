@@ -5,8 +5,9 @@ inputs:
   report-path:
     description: 'Path where the report will be saved'
     required: true
-    # default: './report.md'
-
+  job-type:
+    description: 'The job type report will be generated'
+    required: true
 outputs:
   report-content:
     description: 'Content of the generated report'

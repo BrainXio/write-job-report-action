@@ -10,6 +10,7 @@ Hey there, wonderful human! 🤖 `write-job-report` is a GitHub Action that gene
 
 To use this action, add the following step to your GitHub Actions workflow:
 
+```yaml
 name: CI/CD Pipeline
 
 on: [push, pull_request]
@@ -17,6 +18,10 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        job_type: [environment_setup, build_prepare, builder, devel, test, prod, release]
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -25,19 +30,20 @@ jobs:
         id: job_report
         uses: your-username/write-job-report@v1
         with:
-          report_path: 'reports/job_report.md'
-          job_type: ${{ matrix.job_type }}
+          report-path: 'reports/job_report.md'
+          job-type: ${{ matrix.job_type }}
 
       - name: Upload Report
         uses: actions/upload-artifact@v2
         with:
           name: job-report
           path: reports/job_report.md
+```
 
 ### Inputs
 
-- `report_path`: The file path where the report will be saved.
-- `job_type`: The type of job for which the report is generated. Valid values are `environment_setup`, `build_prepare`, `builder`, `devel`, `test`, `prod`, `release`.
+- `report-path`: The file path where the report will be saved.
+- `job-type`: The type of job for which the report is generated. Valid values are `environment_setup`, `build_prepare`, `builder`, `devel`, `test`, `prod`, `release`.
 
 ### Outputs
 
