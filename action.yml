@@ -4,13 +4,10 @@ description: 'Generates a Job report and saves it to a file'
 inputs:
   report-dir:
     description: 'Directory where the report will be saved, env: INPUT_REPORT_DIR'
-    # required: true
   report-file:
-    description: 'File name of the report, env INPUT_REPORT_FILE'
-    # required: true
+    description: 'File name of the report, env: INPUT_REPORT_FILE'
   job-type:
-    description: 'The job type report will be generated for'
-    required: true
+    description: 'The job type report will be generated for, env: INPUT_JOB_TYPE'
 
 outputs:
   report-content:
