@@ -109,7 +109,7 @@ And the verdict is: after some heavy lifting..
 
 function generateReport(jobType) {
   let reportContent;
-  if (jobType === 'environment_setup') {
+  if (jobType === 'environment') {
     reportContent = writeEnvironmentReport();
   } else if (jobType === 'setup') {
     reportContent = writeSetupReport();
