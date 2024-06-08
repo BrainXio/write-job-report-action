@@ -1,8 +1,11 @@
 const fs = require('fs');
 const path = require('path');
 
-function sanitizeInput(input) {
-  return input.replace(/[^\w\s\.\-]/gi, ''); // Simple sanitization example
+function sanitizeInput(input, variableName) {
+  if (input === undefined) {
+    throw new Error(`Input is undefined for variable: ${variableName}`);
+  }
+  return input.replace(/[^a-zA-Z0-9_\-\/\.]/g, ''); // Allow slashes, alphanumerics, underscore, hyphen, and period
 }
 
 function writeEnvironmentReport() {
@@ -104,21 +107,21 @@ And the verdict is: after some heavy lifting..
 `;
 }
 
-function generateReport() {
-  const part = sanitizeInput(process.env.JOB_TYPE);
-
+function generateReport(jobType) {
   let reportContent;
-  if (part === 'environment_setup' || part === 'build_prepare') {
+  if (jobType === 'environment') {
+    reportContent = writeEnvironmentReport();
+  } else if (jobType === 'setup') {
     reportContent = writeSetupReport();
-  } else if (part === 'builder') {
-    reportContent = writeBuilderReport();
-  } else if (part === 'devel') {
+  } else if (jobType === 'builder') {
+      reportContent = writeBuilderReport();
+  } else if (jobType === 'devel') {
     reportContent = writeDevelReport();
-  } else if (part === 'test') {
+  } else if (jobType === 'test') {
     reportContent = writeTestReport();
-  } else if (part === 'prod') {
+  } else if (jobType === 'prod') {
     reportContent = writeProdReport();
-  } else if (part === 'release') {
+  } else if (jobType === 'release') {
     reportContent = writeReleaseReport();
   } else {
     reportContent = writeFinalReport();
@@ -128,21 +131,41 @@ function generateReport() {
   return reportContent;
 }
 
-function saveReport(reportPath, reportContent) {
+function saveReport(reportDir, reportFile, reportContent) {
+  if (!fs.existsSync(reportDir)) {
+    fs.mkdirSync(reportDir, { recursive: true });
+  }
+  const reportPath = path.join(reportDir, reportFile);
   fs.writeFileSync(reportPath, reportContent);
 }
 
 try {
-  const reportPath = sanitizeInput(process.env.INPUT_REPORT_PATH);
-  const reportContent = generateReport();
-  console.log('Writing report to:', reportPath);
-  saveReport(reportPath, reportContent);
-  console.log(`Report successfully written to ${reportPath}`);
+  if (!process.env.INPUT_REPORT_DIR) {
+    throw new Error('INPUT_REPORT_DIR is not defined');
+  }
+  if (!process.env.INPUT_REPORT_FILE) {
+    throw new Error('INPUT_REPORT_FILE is not defined');
+  }
+  if (!process.env.INPUT_JOB_TYPE) {
+    throw new Error('INPUT_JOB_TYPE is not defined');
+  }
+
+  console.log('INPUT_REPORT_DIR:', process.env.INPUT_REPORT_DIR);
+  console.log('INPUT_REPORT_FILE:', process.env.INPUT_REPORT_FILE);
+  console.log('INPUT_JOB_TYPE:', process.env.INPUT_JOB_TYPE);
+
+  const reportDir = sanitizeInput(process.env.INPUT_REPORT_DIR, 'INPUT_REPORT_DIR');
+  const reportFile = sanitizeInput(process.env.INPUT_REPORT_FILE, 'INPUT_REPORT_FILE');
+  const jobType = sanitizeInput(process.env.INPUT_JOB_TYPE, 'INPUT_JOB_TYPE');
+  const reportContent = generateReport(jobType);
+  console.log('Writing report to:', path.join(reportDir, reportFile));
+  saveReport(reportDir, reportFile, reportContent);
+  console.log(`Report successfully written to ${path.join(reportDir, reportFile)}`);
 
   // Use environment file to set the output variable
   const envOutputPath = process.env.GITHUB_OUTPUT;
   fs.appendFileSync(envOutputPath, `report-content=${reportContent.replace(/\n/g, '%0A')}\n`);
 } catch (error) {
-  console.error('Error writing report:', error);
+  console.error('Error writing report:', error.message);
   process.exit(1);
 }

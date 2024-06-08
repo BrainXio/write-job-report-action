@@ -2,10 +2,12 @@ name: 'Write Job Report'
 description: 'Generates a Job report and saves it to a file'
 
 inputs:
-  report-path:
-    description: 'Path where the report will be saved'
-    required: true
-    # default: './report.md'
+  report-dir:
+    description: 'Directory where the report will be saved, env: INPUT_REPORT_DIR'
+  report-file:
+    description: 'File name of the report, env: INPUT_REPORT_FILE'
+  job-type:
+    description: 'The job type report will be generated for, env: INPUT_JOB_TYPE'
 
 outputs:
   report-content:
